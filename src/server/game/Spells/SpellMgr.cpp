@@ -3342,6 +3342,9 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
                 spellInfo->AttributesCu |= SPELL_ATTR0_CU_NO_INITIAL_THREAT;
                 break;
+            case 49376: // Feral Charge - Cat
+                spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
+                break;
             case 51798: // Brewfest - Relay Race - Intro - Quest Complete
             case 47134: // Quest Complete
                 //! HACK: This spell break quest complete for alliance and on retail not used °_O
