@@ -1447,8 +1447,8 @@ class npc_valkyr_shadowguard : public CreatureScript
             {
                 _events.Reset();
                 me->SetReactState(REACT_PASSIVE);
+                me->SetDisableGravity(true);
                 DoCast(me, SPELL_WINGS_OF_THE_DAMNED, false);
-                me->SetSpeed(MOVE_FLIGHT, 0.642857f, true);
             }
 
             void IsSummonedBy(Unit* /*summoner*/) override
@@ -1494,13 +1494,18 @@ class npc_valkyr_shadowguard : public CreatureScript
                 switch (id)
                 {
                     case POINT_DROP_PLAYER:
+                        // If Valkyr is not actually at drop point, move to it again.
+                        if (me->GetDistance(_dropPoint) > 1.0f)
+                            _events.ScheduleEvent(EVENT_MOVE_TO_DROP_POS, 0);
+                        else
+                        {
                         DoCastAOE(SPELL_EJECT_ALL_PASSENGERS);
                         me->DespawnOrUnsummon(1000);
+                        }
                         break;
                     case POINT_CHARGE:
                         if (Player* target = ObjectAccessor::GetPlayer(*me, _grabbedPlayer))
                         {
-                            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                             if (GameObject* platform = ObjectAccessor::GetGameObject(*me, _instance->GetGuidData(DATA_ARTHAS_PLATFORM)))
                             {
                                 std::list<Creature*> triggers;
@@ -1513,7 +1518,6 @@ class npc_valkyr_shadowguard : public CreatureScript
                                 DoCast(target, SPELL_VALKYR_CARRY);
                                 _dropPoint.Relocate(triggers.front());
                                 _events.ScheduleEvent(EVENT_MOVE_TO_DROP_POS, 1500);
-
                             }
                         }
                         else
@@ -1551,6 +1555,7 @@ class npc_valkyr_shadowguard : public CreatureScript
                             }
                             break;
                         case EVENT_MOVE_TO_DROP_POS:
+                            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                             me->GetMotionMaster()->MovePoint(POINT_DROP_PLAYER, _dropPoint);
                             break;
                         case EVENT_LIFE_SIPHON:
