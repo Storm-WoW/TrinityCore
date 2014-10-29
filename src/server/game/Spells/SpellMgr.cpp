@@ -3331,6 +3331,9 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 17364: // Stormstrike
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_STACK_FOR_DIFF_CASTERS;
                 break;
+            case 72968: // Precious' Ribbon
+                spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
+                break;
             case 51798: // Brewfest - Relay Race - Intro - Quest Complete
             case 47134: // Quest Complete
                 //! HACK: This spell break quest complete for alliance and on retail not used °_O
