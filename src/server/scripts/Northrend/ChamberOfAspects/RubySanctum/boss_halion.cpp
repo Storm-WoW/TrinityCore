@@ -406,6 +406,13 @@ class boss_halion : public CreatureScript
                 if (events.IsInPhase(PHASE_TWO))
                     return;
 
+                // Hack! - Ports players back inside the Flame Ring.
+                if (!me->IsInDist2d(3156.67f, 533.8108f, 38.0f))
+                {
+                    BossAI::DoTeleportAll(3156.037f, 533.2656f, 72.97205f, 0.0f);
+                    return;
+                }
+                
                 generic_halionAI::UpdateAI(diff);
             }
 
