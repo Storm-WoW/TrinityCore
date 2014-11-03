@@ -43,37 +43,20 @@ class npc_pet_dk_ebon_gargoyle : public CreatureScript
 
         struct npc_pet_dk_ebon_gargoyleAI : CasterAI
         {
-            npc_pet_dk_ebon_gargoyleAI(Creature* creature) : CasterAI(creature)
-            {
-                Initialize();
-            }
-
-            void Initialize()
-            {
-                // Not needed to be despawned now
-                _despawnTimer = 0;
-            }
+            npc_pet_dk_ebon_gargoyleAI(Creature* creature) : CasterAI(creature) { }
+            
+            Unit* owner;
 
             void InitializeAI() override
             {
-                Initialize();
+                // Not needed to be despawned now
+                _despawnTimer = 0;
+                owner = me->GetOwner();
 
                 CasterAI::InitializeAI();
                 ObjectGuid ownerGuid = me->GetOwnerGUID();
                 if (!ownerGuid)
                     return;
-
-                // Find victim of Summon Gargoyle spell
-                std::list<Unit*> targets;
-                Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(me, me, 30.0f);
-                Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(me, targets, u_check);
-                me->VisitNearbyObject(30.0f, searcher);
-                for (std::list<Unit*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)
-                    if ((*iter)->HasAura(SPELL_DK_SUMMON_GARGOYLE_1, ownerGuid))
-                    {
-                        me->Attack((*iter), false);
-                        break;
-                    }
             }
 
             void JustDied(Unit* /*killer*/) override
@@ -126,6 +109,13 @@ class npc_pet_dk_ebon_gargoyle : public CreatureScript
                     return;
                 }
 
+                // Make the Gargoyle attack the DKs target
+                if (!me->GetVictim())
+                    if (owner && owner->GetVictim())
+                        AttackStart(owner->GetVictim());
+                        
+                    if (me->GetVictim() && me->GetVictim() != owner->GetVictim())
+                        AttackStart(owner->GetVictim());
                 CasterAI::UpdateAI(diff);
             }
 

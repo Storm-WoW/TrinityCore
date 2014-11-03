@@ -50,6 +50,8 @@ enum Spells
     SPELL_ESSENCE_OF_THE_BLOOD_QUEEN_HEAL   = 70872,
     SPELL_FRENZIED_BLOODTHIRST              = 70877,
     SPELL_UNCONTROLLABLE_FRENZY             = 70923,
+    SPELL_UNCONTROLLABLE_FRENZY_1           = 70924,
+    SPELL_UNCONTROLLABLE_FRENZY_2           = 73015,
     SPELL_PRESENCE_OF_THE_DARKFALLEN        = 70994,
     SPELL_PRESENCE_OF_THE_DARKFALLEN_2      = 71952,
     SPELL_BLOOD_MIRROR_DAMAGE               = 70821,
@@ -639,6 +641,53 @@ class spell_blood_queen_frenzied_bloodthirst : public SpellScriptLoader
         }
 };
 
+class spell_blood_queen_uncontrollable_frenzy : public SpellScriptLoader
+{
+    public:
+        spell_blood_queen_uncontrollable_frenzy() : SpellScriptLoader("spell_blood_queen_uncontrollable_frenzy") { }
+
+        class spell_blood_queen_uncontrollable_frenzy_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_blood_queen_uncontrollable_frenzy_AuraScript);
+
+            void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+            {
+                if (!GetTarget())
+                    return;
+
+                bool valid = false;
+
+                if (InstanceScript* instance = GetTarget()->GetInstanceScript())
+                {
+                    if (instance->GetBossState(DATA_BLOOD_QUEEN_LANA_THEL) == IN_PROGRESS)
+                    {
+                        if (GetTarget()->GetCharmerGUID() == instance->GetData64(DATA_BLOOD_QUEEN_LANA_THEL))
+                        {
+                        valid = true;
+                        }
+                    }
+                }
+
+                if (!valid)
+                {
+                    GetTarget()->RemoveAurasDueToSpell(SPELL_UNCONTROLLABLE_FRENZY);
+                    GetTarget()->RemoveAurasDueToSpell(SPELL_UNCONTROLLABLE_FRENZY_1);
+                    GetTarget()->RemoveAurasDueToSpell(SPELL_UNCONTROLLABLE_FRENZY_2);
+                }
+            }
+
+            void Register() override
+            {
+                AfterEffectApply += AuraEffectApplyFn(spell_blood_queen_uncontrollable_frenzy_AuraScript::AfterApply, EFFECT_0, SPELL_AURA_MECHANIC_IMMUNITY_MASK, AURA_EFFECT_HANDLE_REAL);
+            }
+        };
+
+        AuraScript* GetAuraScript() const override
+        {
+            return new spell_blood_queen_uncontrollable_frenzy_AuraScript();
+        }
+};
+
 class BloodboltHitCheck
 {
     public:
@@ -889,6 +938,7 @@ void AddSC_boss_blood_queen_lana_thel()
     new boss_blood_queen_lana_thel();
     new spell_blood_queen_vampiric_bite();
     new spell_blood_queen_frenzied_bloodthirst();
+    new spell_blood_queen_uncontrollable_frenzy();
     new spell_blood_queen_bloodbolt();
     new spell_blood_queen_essence_of_the_blood_queen();
     new spell_blood_queen_pact_of_the_darkfallen();

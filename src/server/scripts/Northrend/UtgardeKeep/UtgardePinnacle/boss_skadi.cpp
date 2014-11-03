@@ -295,7 +295,8 @@ public:
                     m_uiCrushTimer = 8000;
                     m_uiPoisonedSpearTimer = 10000;
                     m_uiWhirlwindTimer = 20000;
-                    AttackStart(SelectTarget(SELECT_TARGET_RANDOM));
+                    me->AI()->AttackStart(SelectTarget(SELECT_TARGET_RANDOM));
+                    me->SetHealth(me->GetMaxHealth());
                 }
             }
         }

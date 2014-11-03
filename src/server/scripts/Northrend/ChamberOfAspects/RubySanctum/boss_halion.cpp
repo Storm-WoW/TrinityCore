@@ -406,6 +406,13 @@ class boss_halion : public CreatureScript
                 if (events.IsInPhase(PHASE_TWO))
                     return;
 
+                // Hack! - Ports players back inside the Flame Ring.
+                if (!me->IsInDist2d(3156.67f, 533.8108f, 38.0f))
+                {
+                    BossAI::DoTeleportAll(3156.037f, 533.2656f, 72.97205f, 0.0f);
+                    return;
+                }
+                
                 generic_halionAI::UpdateAI(diff);
             }
 
@@ -488,6 +495,7 @@ class boss_twilight_halion : public CreatureScript
                 me->SetHealth(halion->GetHealth());
                 me->SetPhaseMask(0x20, true);
                 me->SetReactState(REACT_AGGRESSIVE);
+                me->setRegeneratingHealth(false); // Hack! - Prevents Twilight Halion from regenerating health until engaged.
             }
 
             void EnterCombat(Unit* who) override
@@ -500,6 +508,8 @@ class boss_twilight_halion : public CreatureScript
                 events.ScheduleEvent(EVENT_SOUL_CONSUMPTION, 20000);
 
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me, 2);
+                
+                me->setRegeneratingHealth(true); // Hack! - Just making sure nothing unexpected happens.
             }
 
             // Never evade

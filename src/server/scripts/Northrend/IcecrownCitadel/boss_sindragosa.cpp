@@ -410,7 +410,7 @@ class boss_sindragosa : public CreatureScript
             void SpellHitTarget(Unit* target, SpellInfo const* spell) override
             {
                 if (uint32 spellId = sSpellMgr->GetSpellIdForDifficulty(70127, me))
-                    if (spellId == spell->Id)
+                    if (spellId == spell->Id && target->GetTypeId() == TYPEID_PLAYER)
                         if (Aura const* mysticBuffet = target->GetAura(spell->Id))
                             _mysticBuffetStack = std::max<uint8>(_mysticBuffetStack, mysticBuffet->GetStackAmount());
 
@@ -563,6 +563,7 @@ class npc_ice_tomb : public CreatureScript
         {
             npc_ice_tombAI(Creature* creature) : ScriptedAI(creature)
             {
+                me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
                 _existenceCheckTimer = 0;
                 SetCombatMovement(false);
             }
@@ -1297,6 +1298,7 @@ class spell_sindragosa_ice_tomb : public SpellScriptLoader
                     if (GameObject* go = summon->SummonGameObject(GO_ICE_BLOCK, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f, 0))
                     {
                         go->SetSpellId(SPELL_ICE_TOMB_DAMAGE);
+                        go->CastSpell(GetHitUnit(), SPELL_ICE_TOMB_DAMAGE, true);
                         summon->AddGameObject(go);
                     }
                 }
@@ -1353,6 +1355,12 @@ class spell_sindragosa_icy_grip : public SpellScriptLoader
             void HandleScript(SpellEffIndex effIndex)
             {
                 PreventHitDefaultEffect(effIndex);
+                
+                // Hack! - Beaconed players shouldn't get gripped with this.
+                if (Unit* unit = GetHitUnit())
+                       if (unit->HasAura(SPELL_FROST_BEACON))
+                           return;
+                           
                 GetHitUnit()->CastSpell(GetCaster(), SPELL_ICY_GRIP_JUMP, true);
             }
 
