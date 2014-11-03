@@ -538,9 +538,6 @@ struct boss_jormungarAI : public BossAI
             instance->SetData(TYPE_NORTHREND_BEASTS, FAIL);
 
         me->DespawnOrUnsummon();
-        if (Creature* otherWorm = ObjectAccessor::GetCreature(*me, instance->GetGuidData(OtherWormEntry)))
-            if (otherWorm->IsAlive())
-                otherWorm->DespawnOrUnsummon();
     }
 
     void KilledUnit(Unit* who) override
