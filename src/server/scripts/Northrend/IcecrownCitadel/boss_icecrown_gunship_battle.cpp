@@ -1722,6 +1722,8 @@ class npc_gunship_mage : public CreatureScript
             npc_gunship_mageAI(Creature* creature) : gunship_npc_AI(creature)
             {
                 me->SetReactState(REACT_PASSIVE);
+                me->SetInCombatWithZone();
+                me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
             }
 
             void EnterEvadeMode() override

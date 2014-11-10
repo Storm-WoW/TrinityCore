@@ -22141,6 +22141,35 @@ void Player::SendCooldownEvent(SpellInfo const* spellInfo, uint32 itemId /*= 0*/
     data << uint32(spellInfo->Id);
     data << uint64(GetGUID());
     SendDirectMessage(&data);
+    
+    uint32 cat = spellInfo->GetCategory();
+    uint32 catRec = spellInfo->CategoryRecoveryTime;
+    if (cat && catRec)
+    {
+        SpellCategoryStore::const_iterator ct = sSpellsByCategoryStore.find(cat);
+        if (ct != sSpellsByCategoryStore.end())
+        {
+            SpellCategorySet const& catSet = ct->second;
+            for (SpellCooldowns::const_iterator i = m_spellCooldowns.begin(); i != m_spellCooldowns.end(); ++i)
+            {
+                 if (i->first == spellInfo->Id) // skip main spell, already handled above
+                     continue;
+                     
+                 SpellInfo const* spellInfo2 = sSpellMgr->GetSpellInfo(i->first);
+                 if (!spellInfo2->IsCooldownStartedOnEvent())
+                     continue;
+                     
+                 if (catSet.find(i->first) != catSet.end())
+                 {
+                     // Send activate cooldown timer (possible 0) at client side
+                     WorldPacket data(SMSG_COOLDOWN_EVENT, 4 + 8);
+                     data << uint32(i->first);
+                     data << uint64(GetGUID());
+                     SendDirectMessage(&data);
+                 }
+            }
+        }
+    }
 }
 
 void Player::UpdatePotionCooldown(Spell* spell)
@@ -26324,6 +26353,10 @@ void Player::ActivateSpec(uint8 spec)
         SetPower(POWER_MANA, 0); // Mana must be 0 even if it isn't the active power type.
 
     SetPower(pw, 0);
+    
+    // Hack! - For now this will do. Gets rid of auras not getting removed after respec under some conditions.
+    RemoveAurasDueToSpell(58427); // Rogue's Overkill
+    RemoveAurasDueToSpell(31665); // Rogue's Master of Subtlety
 }
 
 void Player::ResetTimeSync()
