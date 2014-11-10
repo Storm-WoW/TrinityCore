@@ -153,7 +153,7 @@ Position const DrakeSpawnLoc[2] = // drakonid
 
 Position const NefarianLoc[2] =
 {
-    {-7449.763672f, -1387.816040f, 526.783691f, 3.0f}, // nefarian spawn
+    {-7535.456543f, -1279.562500f, 476.798706f, 3.0f}, // nefarian spawn
     {-7535.456543f, -1279.562500f, 476.798706f, 3.0f}  // nefarian move
 };
 
@@ -345,7 +345,7 @@ public:
 
                                 if (++SpawnedAdds >= 42)
                                 {
-                                    if (Creature* nefarian = me->SummonCreature(NPC_NEFARIAN, NefarianLoc[0]))
+                                    if (Creature* nefarian = me->SummonCreature(NPC_NEFARIAN, NefarianLoc[0].GetPositionX(), NefarianLoc[0].GetPositionY(), NefarianLoc[0].GetPositionZ(), 3, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 12*MINUTE*IN_MILLISECONDS))
                                     {
                                         nefarian->setActive(true);
                                         nefarian->SetCanFly(true);

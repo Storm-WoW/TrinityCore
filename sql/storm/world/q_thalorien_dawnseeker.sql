@@ -1,0 +1,4 @@
+-- Thalorien Dawnseeker's Remains ([Q] Thalorien Dawnseeker)
+UPDATE `creature_template` SET `dynamicflags`='32', `npcflag`='1', `AIName`='SmartAI' WHERE (`entry`='37552');
+INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) VALUES ('37601', '530', '1', '0', '0', '0', '11792.01', '-7065.793', '25.94043', '5.009095', '120', '0', '0', '42', '0', '0', '0', '33554432', '0');
+INSERT INTO `smart_scripts` (`entryorguid`, `event_type`, `action_type`, `action_param1`, `target_type`, `comment`) VALUES ('37552', '64', '33', '37601', '7', 'On gossip hello - give quest credit - Thalorien Dawnseeker\'s Remains');
