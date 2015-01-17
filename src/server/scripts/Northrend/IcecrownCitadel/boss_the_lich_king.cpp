@@ -1447,6 +1447,7 @@ class npc_valkyr_shadowguard : public CreatureScript
             {
                 _events.Reset();
                 me->SetReactState(REACT_PASSIVE);
+                me->SetHover(true);
                 me->SetDisableGravity(true);
                 DoCast(me, SPELL_WINGS_OF_THE_DAMNED, false);
             }
